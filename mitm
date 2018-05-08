@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-mitmdump --no-upstream-cert --insecure -p 9500 -dd -q -s "lib/postman.py '${1}' '${2}'"
+mitmdump --set upstream_cert=false --set host_filter=${1} --set collection_name=${2} --ssl-insecure -p 9500 -q -s "lib/postman.py"
