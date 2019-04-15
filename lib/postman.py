@@ -7,19 +7,21 @@ import uuid
 import argparse
 from urllib.parse import urlencode
 
+from mitmproxy import ctx
 
-def start():
-    """
-    The start is called once on startup by mitmproxy, before any other events.
-    Run time arguments are exposed in the start event.
-    :return: Postman object
-    """
-    parser = argparse.ArgumentParser()
-    parser.add_argument('host', type=str)
-    parser.add_argument('collection_name', type=str)
-    args = parser.parse_args()
-    return Postman(args.host, args.collection_name)
+HOST_FILTER_PARAM = "host_filter"
+COLLECTION_NAME_PARAM = "collection_name"
 
+def load(l):
+    l.add_option(HOST_FILTER_PARAM, str, "example.com", "Host filter option")
+    l.add_option(COLLECTION_NAME_PARAM, str, "collection_name", "Collection name option")
+
+def configure(updated):
+    if HOST_FILTER_PARAM in updated or COLLECTION_NAME_PARAM in updated :
+        ctx.log.info("host filter : " + ctx.options.host_filter)
+        ctx.log.info("collection name : " + ctx.options.collection_name)
+        global addons
+        addons = [Postman(ctx.options.host_filter, ctx.options.collection_name)]
 
 class Postman:
     def __init__(self, host, collection_name='TestCollection'):
